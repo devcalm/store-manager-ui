@@ -1,43 +1,37 @@
 import Input from "../../components/form/Input.jsx";
 import { useFormValidation } from "../../hooks/useFormValidation.jsx";
 import css from "../../components/form/styles.module.scss";
+import RequiredRule from "../../components/form/validation/RequiredRule.js"
+import MaxLengthRule from "../../components/form/validation/MaxLengthRule.js"
+import MinLengthRule from "../../components/form/validation/MinLengthRule.js"
 
 
 export default function CreateVendorForm() {
-    const initialState = {
-        name: "",
-        description: ""
-    };
-
-    const {
-        formState,
-        errors,
-        validationState,
-        handleChange,
-        validateField,
-        validateForm,
-    } = useFormValidation(initialState);
-
-    const validationRules = {
-        name: [
-            { type: "required" },
-            { type: "minLength", value: 2 },
-            { type: "maxLength", value: 250 }
-        ],
-        description: [
-            { type: "required" },
-            { type: "minLength", value: 2 }
-        ]
-    };
+    const { formState, validateForm, validateField, handleChange } = useFormValidation({
+        name: {
+            initialValue: "",
+            rules: [
+                new RequiredRule(),
+                new MinLengthRule({ "value": 2 }),
+                new MaxLengthRule({ "value": 255 })
+            ],
+        },
+        description: {
+            initialValue: "",
+            rules: [
+                new RequiredRule()
+            ]
+        }
+    });
 
 
     function handleSubmit(event) {
         event.preventDefault();
 
-        if (validateForm(validationRules)) {
+        if (validateForm()) {
             console.log("Form submitted successfully!", formState);
         } else {
-            console.error("Validation errors:", errors);
+            console.error("Validation errors:");
         }
     }
 
@@ -48,26 +42,28 @@ export default function CreateVendorForm() {
                 id="name"
                 name="name"
                 type="text"
-                value={formState.name}
-                onChange={handleChange}
-                validationState={validationState}
-                onBlur={() =>
-                    validateField("name", formState.name, validationRules.name)
-                }
+                value={formState.name.value}
+                onChange={(e) => handleChange("name", e.target.value)}
+                onBlur={() => validateField("name")}
                 placeholder="Enter Vendor's name"
+                validationState={{
+                    error: formState.name.error,
+                    wasValidating: formState.name.wasValidating
+                }}
             />
             <Input
                 label="Description"
                 id="description"
                 name="description"
                 type="text"
-                value={formState.description}
-                onChange={handleChange}
-                validationState={validationState}
-                onBlur={() =>
-                    validateField("description", formState.description, validationRules.description)
-                }
                 placeholder="Enter Vendor's description"
+                value={formState.description.value}
+                onChange={(e) => handleChange("description", e.target.value)}
+                onBlur={() => validateField("description")}
+                validationState={{
+                    error: formState.description.error,
+                    wasValidating: formState.description.wasValidating
+                }}
             />
             <div className={"col"}>
                 <button className={`${css.btn} ${css.btn_primary}`} type="submit"> Create </button>

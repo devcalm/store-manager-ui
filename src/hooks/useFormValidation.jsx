@@ -1,57 +1,55 @@
 import { useState } from "react";
-import { validate } from "../utils/validation.js";
+import  FormField  from "../components/form/FormField.js";
 
-export const useFormValidation = (initialState) => {
-    const [formState, setFormState] = useState(initialState);
-    const [errors, setErrors] = useState({});
-    const [validationState, setValidationState] = useState({});
+export const useFormValidation = (fieldsConfig) => {
+    const [formState, setFormState] = useState(
+        Object.keys(fieldsConfig).reduce((acc, key) => {
+            acc[key] = new FormField(fieldsConfig[key].initialValue, fieldsConfig[key].rules);
+            return acc;
+        }, {})
+    );
 
-    const validateField = (name, value, rules) => {
-        const error = validate(value, rules);
-        setErrors(prev => ({ ...prev, [name]: error }));
-        setValidationState((prev) => ({
-            ...prev,
-            [name]: {wasValidating: true, error }
-        }));
-        return error;
-    };
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormState((prev) => ({ ...prev, [name]: value }));
-        setErrors((prev) => ({ ...prev, [name]: "" }));
-        setValidationState((prev) => ({
-            ...prev,
-            [name]: { ...prev[name], error: "", wasValidating: prev[name]?.wasValidating || false },
-          }));
-    };
-
-    const validateForm = (validationRules) => {
-        const newErrors = {};
-        const newValidationState = {};
+    const validateForm = () => {
         let isValid = true;
+        const updatedFormState = { ...formState };
 
-        for (const [field, rules] of Object.entries(validationRules)) {
-            const error = validate(formState[field], rules);
-            newErrors[field] = error;
-            newValidationState[field] = { wasValidating: true, error };
-            if (error) {
-                isValid = false;
-            }
-           
-        }
+        Object.keys(updatedFormState).forEach((key) => {
+            const field = updatedFormState[key];
+            const error = field.validate(
+                Object.fromEntries(
+                    Object.entries(updatedFormState).map(([k, v]) => [k, v.value])
+                )
+            );
+            if (error) isValid = false;
+        });
 
-        setErrors(newErrors);
-        setValidationState(newValidationState);
+        setFormState(updatedFormState);
         return isValid;
+    };
+
+    const validateField = (name) => {
+        const updatedFormState = { ...formState };
+        const field = updatedFormState[name];
+
+        field.validate(
+            Object.fromEntries(
+                Object.entries(updatedFormState).map(([k, v]) => [k, v.value])
+            )
+        );
+
+        setFormState(updatedFormState);
+    };
+
+    const handleChange = (name, value) => {
+        const updatedFormState = { ...formState };
+        updatedFormState[name].updateValue(value);
+        setFormState(updatedFormState);
     };
 
     return {
         formState,
-        errors,
-        handleChange,
-        validateField,
         validateForm,
-        validationState
+        validateField,
+        handleChange
     };
 };

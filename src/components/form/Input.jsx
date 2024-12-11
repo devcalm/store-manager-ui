@@ -11,7 +11,7 @@ export default function Input({
     rules,
     ...props
 }) {
-    const { wasValidating, error } = validationState[name] || {};
+    const { error, wasValidating } = validationState;
 
     const dataValidation = wasValidating
         ? (error ? "error" : "success")
