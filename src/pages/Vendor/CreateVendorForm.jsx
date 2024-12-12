@@ -1,14 +1,16 @@
 import Input from "../../components/form/Input.jsx";
 import { useFormValidation } from "../../hooks/useFormValidation.jsx";
 import { useFormSubmit } from "../../hooks/useFormSubmit.jsx";
+import { useNavigate } from "react-router-dom";
 import css from "../../components/form/styles.module.scss";
 import RequiredRule from "../../components/form/validation/RequiredRule.js"
 import MaxLengthRule from "../../components/form/validation/MaxLengthRule.js"
 import MinLengthRule from "../../components/form/validation/MinLengthRule.js"
-
+import Action from "../../components/form/Action.js";
+import API from "../../utils/axios/apiRoutes.js";
 
 export default function CreateVendorForm() {
-
+    const navigate = useNavigate();
     const { formState, validateForm, validateField, handleChange } = useFormValidation({
         name: {
             initialValue: "",
@@ -27,15 +29,12 @@ export default function CreateVendorForm() {
     });
 
     const formSubmitHandler = async (formData) => {
-        if (!validateForm()) {
-            console.error("Validation errors!");
-            return;
+        if (validateForm()) {
+            Action.create(API.vendors, formData, navigate);
         }
-        await fakeApiRequest();
     };
 
     const { handleSubmit, sending } = useFormSubmit(formSubmitHandler);
-
 
     return (
         <form onSubmit={handleSubmit} className={`${css.form_container} row`}>
@@ -69,8 +68,3 @@ export default function CreateVendorForm() {
         </form>
     );
 }
-
-const fakeApiRequest = () =>
-    new Promise((resolve) => {
-        setTimeout(resolve, 2000); // Simulate 2 seconds delay
-    });
