@@ -1,5 +1,6 @@
 import Input from "../../components/form/Input.jsx";
 import { useFormValidation } from "../../hooks/useFormValidation.jsx";
+import { useFormSubmit } from "../../hooks/useFormSubmit.jsx";
 import css from "../../components/form/styles.module.scss";
 import RequiredRule from "../../components/form/validation/RequiredRule.js"
 import MaxLengthRule from "../../components/form/validation/MaxLengthRule.js"
@@ -7,6 +8,7 @@ import MinLengthRule from "../../components/form/validation/MinLengthRule.js"
 
 
 export default function CreateVendorForm() {
+
     const { formState, validateForm, validateField, handleChange } = useFormValidation({
         name: {
             initialValue: "",
@@ -24,24 +26,21 @@ export default function CreateVendorForm() {
         }
     });
 
-
-    function handleSubmit(event) {
-        event.preventDefault();
-
-        if (validateForm()) {
-            console.log("Form submitted successfully!", formState);
-        } else {
-            console.error("Validation errors:");
+    const formSubmitHandler = async (formData) => {
+        if (!validateForm()) {
+            console.error("Validation errors!");
+            return;
         }
-    }
+        await fakeApiRequest();
+    };
+
+    const { handleSubmit, sending } = useFormSubmit(formSubmitHandler);
+
 
     return (
         <form onSubmit={handleSubmit} className={`${css.form_container} row`}>
             <Input
-                label="Name"
-                id="name"
                 name="name"
-                type="text"
                 value={formState.name.value}
                 onChange={(e) => handleChange("name", e.target.value)}
                 onBlur={() => validateField("name")}
@@ -52,10 +51,7 @@ export default function CreateVendorForm() {
                 }}
             />
             <Input
-                label="Description"
-                id="description"
                 name="description"
-                type="text"
                 placeholder="Enter Vendor's description"
                 value={formState.description.value}
                 onChange={(e) => handleChange("description", e.target.value)}
@@ -65,9 +61,16 @@ export default function CreateVendorForm() {
                     wasValidating: formState.description.wasValidating
                 }}
             />
-            <div className={"col"}>
-                <button className={`${css.btn} ${css.btn_primary}`} type="submit"> Create </button>
+            <div className="col">
+                <button className={`${css.btn} ${css.btn_primary}`} type="submit" disabled={sending}>
+                    {sending ? "Sending..." : "Submit"}
+                </button>
             </div>
         </form>
     );
 }
+
+const fakeApiRequest = () =>
+    new Promise((resolve) => {
+        setTimeout(resolve, 2000); // Simulate 2 seconds delay
+    });

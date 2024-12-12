@@ -1,14 +1,11 @@
 import css from "./styles.module.scss";
 
 export default function Input({
-    id,
     name,
-    label,
     value,
     onChange,
     onBlur,
     validationState = {},
-    rules,
     ...props
 }) {
     const { error, wasValidating } = validationState;
@@ -19,9 +16,9 @@ export default function Input({
 
     return (
         <div className="col">
-            <label htmlFor={id}>{label}</label>
+            <label htmlFor={name}>{`${name[0].toUpperCase()}${name.slice(1)}`}</label>
             <input
-                id={id}
+                id={name}
                 name={name}
                 className={css.form_control}
                 value={value}
