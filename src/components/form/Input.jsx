@@ -16,11 +16,13 @@ export default function Input({
 
     return (
         <div className="col">
-            <label htmlFor={name}>{`${name[0].toUpperCase()}${name.slice(1)}`}</label>
+            <label className={css.formLabel} htmlFor={name}>
+                {`${name[0].toUpperCase()}${name.slice(1)}`}
+            </label>
             <input
                 id={name}
                 name={name}
-                className={css.form_control}
+                className={css.formControl}
                 value={value}
                 onChange={onChange}
                 onBlur={onBlur}
@@ -28,7 +30,7 @@ export default function Input({
                 {...props}
             />
             <div
-                className={`${css.invalid_feedback} ${error ? "show_element" : undefined
+                className={`${css.invalidFeedback} ${error ? "showElement" : undefined
                     }`}
             >
                 {error}
