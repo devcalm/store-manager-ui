@@ -2,26 +2,16 @@ import apiClient from "../../utils/axios/apiClient.js";
 
 class Action {
 
-    static async create(url, formData, navigate) {
-        const response = await apiClient.post(url, Object.fromEntries(formData));
-        const { id } = response;
-        if (id) {
-            navigate(`${url}/${id}`);
-        }
+    static async create(url, formData) {
+        return await apiClient.post(url, Object.fromEntries(formData));
     }
 
-    static async update(url, formData, navigate) {
-        const response = await apiClient.put(url, Object.fromEntries(formData));
-        const { id } = response;
-        if (id) {
-            navigate(`${url}`);
-        }
+    static async update(url, formData) {
+        return await apiClient.put(url, Object.fromEntries(formData));
     }
 
-    static async remove(url, navigate) {
-        const response = await apiClient.delete(url);
-        const indexUrl = url.slice(0, url.lastIndexOf('/'));
-        navigate(indexUrl);
+    static async remove(url) {
+        return await apiClient.delete(url);
     }
 }
 
