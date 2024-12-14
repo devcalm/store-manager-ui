@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom"
-import PageContent from "../../components/content/PageContent.jsx"
+import PageContent from "../../../components/content/PageContent.jsx"
 
 export default function VendorViewPage() {
     const {id} = useParams();

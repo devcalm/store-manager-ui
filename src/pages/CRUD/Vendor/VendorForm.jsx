@@ -1,14 +1,17 @@
-import Input from "../../components/form/Input.jsx";
-import { useFormValidation } from "../../hooks/useFormValidation.jsx";
-import { useFormSubmit } from "../../hooks/useFormSubmit.jsx";
-import css from "../../components/form/styles.module.scss";
-import RequiredRule from "../../components/form/validation/RequiredRule.js"
-import MaxLengthRule from "../../components/form/validation/MaxLengthRule.js"
-import MinLengthRule from "../../components/form/validation/MinLengthRule.js"
+import Input from "../../../components/form/Input.jsx";
+import { useFormValidation } from "../../../hooks/useFormValidation.jsx";
+import { useFormSubmit } from "../../../hooks/useFormSubmit.jsx";
+import css from "../../../components/form/styles.module.scss";
+import RequiredRule from "../../../components/form/validation/RequiredRule.js"
+import MaxLengthRule from "../../../components/form/validation/MaxLengthRule.js"
+import MinLengthRule from "../../../components/form/validation/MinLengthRule.js"
+import SubmitButton from "../../../components/ui/buttons/SubmitButton.jsx";
 
 export default function VendorForm({
     initialValues = { name: "", description: "" },
-    onSubmit
+    onSubmit,
+    submitButtonClass,
+    deleteButton
 }) {
     const { formState, validateForm, validateField, handleChange } = useFormValidation({
         name: {
@@ -61,9 +64,8 @@ export default function VendorForm({
                     }}
                 />
                 <div className="col">
-                    <button className={`${css.btn} ${css.btnPrimary}`} type="submit" disabled={sending}>
-                        {sending ? "Sending..." : "Submit"}
-                    </button>
+                   <SubmitButton classBtn={submitButtonClass} sending={sending}  />
+                   {deleteButton}
                 </div>
             </div>
         </form>

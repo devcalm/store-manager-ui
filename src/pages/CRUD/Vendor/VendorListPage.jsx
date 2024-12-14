@@ -1,4 +1,4 @@
-import PageContent from "../../components/content/PageContent.jsx"
+import PageContent from "../../../components/content/PageContent.jsx"
 
 export default function VendorListPage() {
     return (
