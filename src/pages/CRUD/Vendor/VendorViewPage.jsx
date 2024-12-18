@@ -1,15 +1,15 @@
-import { useLoaderData, Link } from "react-router-dom"
+import { useLoaderData, Link, useNavigate } from "react-router-dom"
 import PageContent from "../../../components/content/PageContent.jsx"
 import ROUTES from "../../../components/routes/routes.js";
 import Button from "../../../components/ui/buttons/Button.jsx";
 import DeleteButton from "../../../components/ui/buttons/DeleteButton.jsx";
-import { useState } from "react";
-import Modal from "../../../components/ui/modals/Modal.jsx";
 import DeleteConfirmation from "../../../components/ui/modals/DeleteConfirmation.jsx";
+import { useModal } from "../../../context/ModalContext.jsx";
 
 export default function VendorViewPage() {
     const { id, name, description } = useLoaderData();
-    const [modalIsOpen, setModalIsOpen] = useState(false)
+    const { openModal, closeModal } = useModal();
+    const navigate = useNavigate();
     const vendor = useLoaderData();
 
     const handleDelete = async (formData) => {
@@ -18,11 +18,15 @@ export default function VendorViewPage() {
     };
 
     function handleConfirmDelete() {
-        setModalIsOpen(true);
-    }
-
-    function handleRejectDelete() {
-        setModalIsOpen(false);
+        openModal(
+            <DeleteConfirmation
+                onCancel={closeModal}
+                onClick={() => {
+                    handleDelete();
+                    closeModal();
+                }}
+            />
+        );
     }
 
     return (
@@ -36,12 +40,9 @@ export default function VendorViewPage() {
                     <Link to={ROUTES.VENDOR_EDIT(id)}>
                         <Button text="Update" classBtn="btnPrimary" />
                     </Link>
-                    <DeleteButton classBtn="ml-4" onClick={handleConfirmDelete}/>
+                    <DeleteButton classBtn="ml-4" onClick={handleConfirmDelete} />
                 </div>
             </div>
-            <Modal open={modalIsOpen} onClose={handleRejectDelete}>
-                <DeleteConfirmation onClick={handleDelete} onCancel={handleRejectDelete} />
-            </Modal>
         </PageContent>
     );
 }

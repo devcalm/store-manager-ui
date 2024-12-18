@@ -20,5 +20,4 @@ export default function Modal({open, children, onClose}) {
         </dialog>,
         document.getElementById("modal")
     );
-
 }

@@ -5,15 +5,14 @@ import Action from "../../../components/form/Action.js";
 import API from "../../../utils/axios/apiRoutes.js";
 import ROUTES from "../../../components/routes/routes.js";
 import DeleteButton from "../../../components/ui/buttons/DeleteButton.jsx";
-import { useState } from "react";
-import Modal from "../../../components/ui/modals/Modal.jsx";
 import DeleteConfirmation from "../../../components/ui/modals/DeleteConfirmation.jsx";
+import { useModal } from "../../../context/ModalContext.jsx";
 
 function VendorUpdatePage() {
     const { id } = useParams();
     const vendor = useLoaderData();
     const navigate = useNavigate();
-    const [modalIsOpen, setModalIsOpen] = useState(false)
+    const { openModal, closeModal } = useModal();
     const title = `Update vendor: ${vendor.name}`;
 
     const handleUpdate = async (formData) => {
@@ -27,11 +26,15 @@ function VendorUpdatePage() {
     };
 
     function handleConfirmDelete() {
-        setModalIsOpen(true);
-    }
-
-    function handleRejectDelete() {
-        setModalIsOpen(false);
+        openModal(
+            <DeleteConfirmation
+                onCancel={closeModal}
+                onClick={() => {
+                    handleDelete();
+                    closeModal();
+                }}
+            />
+        );
     }
 
     return (
@@ -42,9 +45,6 @@ function VendorUpdatePage() {
                 submitButtonClass="btnPrimary"
                 deleteButton={<DeleteButton classBtn="ml-4" onClick={handleConfirmDelete} />}
             />
-            <Modal open={modalIsOpen} onClose={handleRejectDelete}>
-                <DeleteConfirmation onClick={handleDelete} onCancel={handleRejectDelete} />
-            </Modal>
         </PageContent>
     );
 }
